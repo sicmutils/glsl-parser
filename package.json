@@ -1,23 +1,27 @@
 {
-  "name": "glsl-parser",
+  "name": "@sicmutils/glsl-parser",
   "version": "2.0.1",
   "description": "transform streamed glsl tokens into an ast",
-  "main": "stream.js",
+  "main": "direct.js",
   "dependencies": {
-    "glsl-tokenizer": "^2.1.4",
-    "through": "2.3.4",
-    "through2": "^0.6.3"
+    "glsl-tokenizer": "^2.1.4"
   },
   "devDependencies": {
     "tap-spec": "^1.0.1",
     "tape": "^3.0.2"
   },
+  "files": [
+    "/lib",
+    "direct.js",
+    "index.js",
+    "*.md"
+  ],
   "scripts": {
     "test": "node test/index.js | tap-spec"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/stackgl/glsl-parser.git"
+    "url": "git://github.com/sicmutils/glsl-parser.git"
   },
   "keywords": [
     "glsl",
