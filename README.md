@@ -1,9 +1,4 @@
-# glsl-parser
-
-![](http://img.shields.io/badge/stability-stable-green.svg?style=flat)
-![](http://img.shields.io/npm/v/glsl-parser.svg?style=flat)
-![](http://img.shields.io/npm/dm/glsl-parser.svg?style=flat)
-![](http://img.shields.io/npm/l/glsl-parser.svg?style=flat)
+# glsl-parser (SICMUtils fork of https://github.com/stackgl/glsl-parser)
 
 A GLSL parser that takes tokens from
 [glsl-tokenizer](http://github.com/stackgl/glsl-tokenizer) and turns them into
@@ -13,34 +8,18 @@ May either be used synchronously or as a stream.
 
 ## API
 
-### `stream = require('glsl-parser/stream')`
+NOTE: This fork of https://github.com/stackgl/glsl-parser removes the streaming
+api (in `stream.js`) to exclude the `through` dependency, which causes problems
+with Mathbox. See [this issue](https://gitgud.io/unconed/mathbox/-/issues/20)
+for details.
 
-Creates a GLSL parser stream, which emits nodes as they're parsed.
-
-``` javascript
-var TokenStream = require('glsl-tokenizer/stream')
-var ParseStream = require('glsl-parser/stream')
-var fs = require('fs')
-
-fs.createReadStream('test.glsl')
-  .pipe(TokenStream())
-  .pipe(ParseStream())
-  .on('data', function(x) {
-    console.log('ast of', x.type)
-  })
-```
-
-### `ast = stream.program`
-
-The full program's AST, which will be updated with each incoming token.
-
-### `ast = require('glsl-parser/direct')(tokens)`
+### `ast = require('@sicmutils/glsl-parser/direct')(tokens)`
 
 Synchronously parses an array of tokens from `glsl-tokenizer`.
 
 ``` javascript
 var TokenString = require('glsl-tokenizer/string')
-var ParseTokens = require('glsl-parser/direct')
+var ParseTokens = require('@sicmutils/glsl-parser/direct')
 var fs = require('fs')
 
 var src = fs.readFileSync('test.glsl', 'utf8')
@@ -79,15 +58,16 @@ console.log(ast)
 
 ## Known Issues
 
-* because i am not smart enough to write a fully streaming parser, the current parser "cheats" a bit when it encounters a `expr` node! it actually waits until it has all the tokens it needs to build a tree for a given expression, then builds it and emits the constituent child nodes in the expected order. the `expr` parsing is heavily influenced by [crockford's tdop article](http://javascript.crockford.com/tdop/tdop.html). the rest of the parser is heavily influenced by fever dreams.
+* the parser might hit a state where it's looking at what *could be* an
+expression, or it could be a declaration -- that is, the statement starts with a
+previously declared `struct`. it'll opt to pretend it's a declaration, but that
+might not be the case -- it might be a user-defined constructor starting a
+statement!
 
-* the parser might hit a state where it's looking at what *could be* an expression, or it could be a declaration --
-that is, the statement starts with a previously declared `struct`. it'll opt to pretend it's a declaration, but that
-might not be the case -- it might be a user-defined constructor starting a statement!
-
-* "unhygenic" `#if` / `#endif` macros are completely unhandled at the moment, since they're a bit of a pain.
-if you've got unhygenic macros in your code, move the #if / #endifs to statement level, and have them surround
-wholly parseable code. this sucks, and i am sorry.
+* "unhygenic" `#if` / `#endif` macros are completely unhandled at the moment,
+since they're a bit of a pain. if you've got unhygenic macros in your code, move
+the #if / #endifs to statement level, and have them surround wholly parseable
+code. this sucks, and i am sorry.
 
 ## License
 
